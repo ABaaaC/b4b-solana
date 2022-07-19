@@ -1,0 +1,20 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+b4b = "3RQXPem1Cvzk7KFfhAAHRbtb86inXQjNyzN81K9zWVTs"
+
+[programs.devnet]
+b4b = "3RQXPem1Cvzk7KFfhAAHRbtb86inXQjNyzN81K9zWVTs"
+
+# [registry]
+# url = "https://api.apr.dev"
+
+[provider]
+# cluster = "devnet"
+cluster = "localnet"
+wallet = "/Users/sabukhovich/.config/solana/id.json"
+
+[scripts]
+test = "yarn run mocha -t 1000000 tests/"

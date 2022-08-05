@@ -2,7 +2,7 @@ const anchor = require("@project-serum/anchor");
 // const { Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL } = require("@solana/web3.js");
 const { LAMPORTS_PER_SOL } = require("@solana/web3.js");
 
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 const fs = require('fs');
 const bs58 = require('bs58');
 
@@ -78,8 +78,9 @@ describe("order", () => {
   });
 
   it("Book the order", async () => {
+
     const order_lamports_before = (await program.account.orderInfo.getAccountInfo(orderInfo.publicKey)).lamports
-    await program.rpc.orderBooking({
+    const tx = await program.rpc.orderBooking({
       accounts: {
         orderInfo: orderInfo.publicKey,
         buisness: buisness.publicKey,
@@ -87,11 +88,41 @@ describe("order", () => {
       },
       signers: [buisness],
     });
+    await program.provider.connection.confirmTransaction(tx);
 
     const orderInfoAccount = await program.account.orderInfo.getAccountInfo(orderInfo.publicKey);
     const orderInfoFetched = await program.account.orderInfo.fetch(orderInfo.publicKey);
 
     expect((orderInfoAccount.lamports - order_lamports_before).toString()).equal(orderInfoFetched.cost.toString());
+
+});
+
+it("Approve the order", async () => {
+    let orderInfoFetched = await program.account.orderInfo.fetch(orderInfo.publicKey);
+    const influencerBalanceBefore = await provider.connection.getBalance(
+        orderInfoFetched.influencer
+      );
+    
+    const tx = await program.rpc.orderApprove({
+      accounts: {
+        orderInfo: orderInfo.publicKey,
+        buisness: buisness.publicKey,
+        influencer: orderInfoFetched.influencer,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      },
+      signers: [orderInfo, buisness],
+    });
+    await program.provider.connection.confirmTransaction(tx);
+
+    const orderInfoBalance = await provider.connection.getBalance(
+        orderInfo.publicKey
+      );
+    const influencerBalance = await provider.connection.getBalance(
+        orderInfoFetched.influencer
+      );
+
+    expect(orderInfoBalance).eql(0);
+    assert.isAtLeast(influencerBalance - influencerBalanceBefore, orderInfoFetched.cost.toNumber());
 
 });
 

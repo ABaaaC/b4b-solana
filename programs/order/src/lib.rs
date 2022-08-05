@@ -50,6 +50,17 @@ pub mod order {
 
         Ok(())
     }
+
+    pub fn order_approve(ctx: Context<OrderApprove>) -> Result<()>
+    {
+        let order_info: &mut Account<OrderInfo> = &mut ctx.accounts.order_info;
+        let influencer: &AccountInfo = &ctx.accounts.influencer;
+
+        **influencer.try_borrow_mut_lamports()? += order_info.to_account_info().lamports();
+        **order_info.to_account_info().try_borrow_mut_lamports()? = 0;
+
+        Ok(())
+    }
 }
 
 
@@ -72,6 +83,17 @@ pub struct OrderBooking<'info> {
     #[account(mut)]
     pub buisness: Signer<'info>,
     pub system_program: Program<'info, System>,
+} 
+
+#[derive(Accounts)]
+pub struct OrderApprove<'info> {
+    #[account(mut, signer)]
+    pub order_info: Account<'info, OrderInfo>,
+    #[account(mut)]
+    pub buisness: Signer<'info>,
+    #[account(mut)]
+    pub influencer: AccountInfo<'info>,
+    // pub system_program: Program<'info, System>,
 } 
 
 #[account]

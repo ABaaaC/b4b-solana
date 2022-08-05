@@ -4,9 +4,12 @@ skip-lint = false
 
 [programs.localnet]
 b4b = "3RQXPem1Cvzk7KFfhAAHRbtb86inXQjNyzN81K9zWVTs"
+order = "9AYGCbwCTLu5zRNRmynrz3xL5EjiDaoXjfLx2PTQQ4qA"
 
 [programs.devnet]
 b4b = "3RQXPem1Cvzk7KFfhAAHRbtb86inXQjNyzN81K9zWVTs"
+order = "9AYGCbwCTLu5zRNRmynrz3xL5EjiDaoXjfLx2PTQQ4qA"
+
 
 # [registry]
 # url = "https://api.apr.dev"
